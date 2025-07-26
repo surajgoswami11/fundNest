@@ -16,6 +16,7 @@ const Navbar = () => {
             <Button color="inherit" variant="outlined" sx={{ m: 1 }}>
               About
             </Button>
+            {/* login page redirect */}
             <Link href="auth/login/">
               <Button color="primary" variant="contained" sx={{ m: 1 }}>
                 Login
