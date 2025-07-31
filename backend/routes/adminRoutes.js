@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { protectRoutes } = require("../middlewares/authMiddleware");
+const { protectRoutes, authorize } = require("../middlewares/authMiddleware");
 const {
   pendingKYC,
   resolve,
@@ -9,8 +9,8 @@ const {
 
 const router = express.Router();
 
-router.get("kyc/pending-kyc", protectRoutes, pendingKYC);
-router.put("kyc/resolve-kyc/:id", protectRoutes, resolve);
-router.put("kyc/reject-kyc/:id", protectRoutes, reject);
+router.get("/kyc/pending-kyc", protectRoutes,authorize('admin'), pendingKYC);
+router.put("/kyc/resolve-kyc/:id", protectRoutes,authorize('admin'), resolve);
+router.put("/kyc/reject-kyc/:id", protectRoutes, authorize('admin'),reject);
 
 module.exports = router;

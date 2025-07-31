@@ -12,8 +12,8 @@ const { protectRoutes } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.get("/", protectRoutes, getAllUser);
-router.get("/:id", protectRoutes, getUserById);
+router.get("/", protectRoutes, authorize("admin"), getAllUser);
+router.get("/:id", protectRoutes, authorize("admin"), getUserById);
 
 router.post(
   "/kyc",
@@ -28,6 +28,7 @@ router.post(
 router.put(
   "/update-user/:id",
   protectRoutes,
+  authorize("user"),
   upload.single("profilePic"),
   updateUser
 );
