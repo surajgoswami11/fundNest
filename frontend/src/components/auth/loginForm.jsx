@@ -37,7 +37,8 @@ export default function LoginForm() {
       if (userRole === "admin") {
         router.push("/dashboard/admin");
       } else if (userRole === "user") {
-        router.push("/dashboard/user");
+        // router.push("/dashboard/user");
+        router.push("documents/upload-document");
       } else {
         toast.error("Invalid role");
       }
@@ -202,8 +203,7 @@ export default function LoginForm() {
           >
             Don't have an account?{" "}
             <Link
-              // href="signup/"
-              href="/auth/signup"
+              href="/signup"
               style={{
                 color: "#90caf9",
                 fontWeight: "bold",

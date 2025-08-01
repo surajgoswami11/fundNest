@@ -35,8 +35,15 @@ exports.getAllUser = async (req, res, next) => {
 exports.uploadKyc = async (req, res, next) => {
   const userId = req.user.id;
   try {
-    const { accountHolderName, bankName, IFSC, accountNo, panNo, aadharNo } =
-      req.body;
+    const {
+      accountHolderName,
+      bankName,
+      IFSC,
+      accountNo,
+      panNo,
+      aadharNo,
+      branchName,
+    } = req.body;
 
     if (
       !req.files ||
@@ -63,6 +70,7 @@ exports.uploadKyc = async (req, res, next) => {
       accountNo,
       panNo,
       aadharNo,
+      branchName,
       passbookImage: passbookImage.secure_url,
       aadharImage: aadharImage.secure_url,
       panImage: panImage.secure_url,

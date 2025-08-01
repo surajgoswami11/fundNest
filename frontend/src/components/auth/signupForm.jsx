@@ -42,7 +42,7 @@ export default function SignupForm() {
 
     if (result.success === true) {
       toast.success("User register succesfully");
-      router.push("/auth/login");
+      router.push("/login");
       setLoading(false);
       setEmail("");
       setPassword("");

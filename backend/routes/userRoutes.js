@@ -19,9 +19,9 @@ router.post(
   "/kyc",
   protectRoutes,
   upload.fields([
-    { name: "passbookImage", maxCount: 5 },
-    { name: "aadharImage", maxCount: 5 },
-    { name: "panImage", maxCount: 5 },
+    { name: "passbookImage", maxCount: 2 },
+    { name: "aadharImage", maxCount: 2 },
+    { name: "panImage", maxCount: 2 },
   ]),
   uploadKyc
 );
