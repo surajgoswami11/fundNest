@@ -6,7 +6,7 @@ const {
   createFund,
   getAllFund,
 } = require("../controller/fundController");
-const { protectRoutes } = require("../middlewares/authMiddleware");
+const { protectRoutes, authorize } = require("../middlewares/authMiddleware");
 
 const upload = require("../middlewares/multer");
 
@@ -18,9 +18,9 @@ router.post(
   upload.array("images", 5),
   createFund
 );
-router.get("/", protectRoutes, getAllFund);
-router.get("/:id", protectRoutes, getFundById);
-router.put("/:id", protectRoutes, upload.array("images", 5), updateFund);
-router.delete("/:id", protectRoutes, deleteFund);
+router.get("/", protectRoutes,authorize,authorize('admin','user'), getAllFund);
+router.get("/:id", protectRoutes,authorize('admin','user'), getFundById);
+router.put("/:id", protectRoutes,authorize('admin','user'), upload.array("images", 5), updateFund);
+router.delete("/:id", protectRoutes,authorize('admin','user'), deleteFund);
 
 module.exports = router;

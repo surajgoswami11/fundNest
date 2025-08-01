@@ -1,5 +1,6 @@
 const express = require("express");
 const { logout, login, signup } = require("../controller/authController");
+const {generateToken}=require("../lib/token")
 //
 const passport = require("passport");
 
