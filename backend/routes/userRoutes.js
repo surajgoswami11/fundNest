@@ -8,7 +8,7 @@ const {
 } = require("../controller/userController");
 
 const upload = require("../middlewares/multer");
-const { protectRoutes } = require("../middlewares/authMiddleware");
+const { protectRoutes, authorize } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
