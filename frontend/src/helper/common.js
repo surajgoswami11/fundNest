@@ -49,18 +49,23 @@ export const postData = async (url, data, withToken = false) => {
 };
 
 //
-export const postFormData = async (url, formData, withToken = false) => {
+export const postFormData = async (url, formData, withToken = true) => {
   try {
     const headers = {
-      "Content-Type": "multipart/form-data",
       ...(withToken ? getAuthHeaders() : {}),
     };
-    const response = await api.post(url, formData, { headers });
+
+    const response = await api.post(url, formData, {
+      headers,
+      withCredentials: true, 
+    });
+
     return response.data;
   } catch (error) {
     return handleError(error);
   }
 };
+
 
 //  (for updates)
 export const updateData = async (url, data, withToken = false) => {
