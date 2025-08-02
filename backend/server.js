@@ -47,7 +47,7 @@ app.use("/api/auth", auth);
 app.use("/api/user", user);
 app.use("/api/admin", admin);
 app.use("/api/fund", fund);
-app.use("/api/payment")
+app.use("/api/payment",payment)
 
 app.use(passport.initialize());
 

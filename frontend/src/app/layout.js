@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
           <CssBaseline />
           {children}
         </ThemeProvider>
-        <ToastContainer position="top-right" autoClose={2000} />
+        <ToastContainer position="top-center" autoClose={2000} style={{borderRadius:"7px solid black" ,border:"2px"}}/>
       </body>
     </html>
   );

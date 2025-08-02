@@ -28,7 +28,7 @@ export default function LoginForm() {
     e.preventDefault();
     setLoading(true);
 
-    const result = await postData("/api/auth/login", { email, password });
+    const result = await postData("/api/auth/login", { email, password },true);
     if (result.success === true) {
       toast.success("login successfully");
 
