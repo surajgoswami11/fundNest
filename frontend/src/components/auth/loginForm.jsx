@@ -13,7 +13,11 @@ import { useState } from "react";
 import LockPersonIcon from "@mui/icons-material/LockPerson";
 import { FacebookRounded, Google } from "@mui/icons-material";
 import Link from "next/link";
-import { postData } from "@/helper/common";
+import {
+  postApiData,
+  postApiFormDataToken,
+  postFormData,
+} from "@/helper/common";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
@@ -28,7 +32,10 @@ export default function LoginForm() {
     e.preventDefault();
     setLoading(true);
 
-    const result = await postData("/api/auth/login", { email, password },true);
+    const result = await postApiData("api/auth/login", {
+      email,
+      password,
+    });
     if (result.success === true) {
       toast.success("login successfully");
 

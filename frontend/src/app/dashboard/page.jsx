@@ -1,9 +1,13 @@
-const MainDashboard = () => {
+"use client";
+
+import Dashboard from "@/components/dashboard/Dashboard";
+// import DashboardTemplate from "@/app/template";
+import DashboardTemplate from "@/components/dashboard/Dashboard";
+const DashboardPage = () => {
   return (
-    <>
-      <h1>This is main dashboard of every user</h1>
-    </>
+    <DashboardTemplate>
+      <Dashboard />
+    </DashboardTemplate>
   );
 };
-
-export default MainDashboard;
+export default DashboardPage;

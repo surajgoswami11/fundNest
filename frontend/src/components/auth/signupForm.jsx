@@ -15,7 +15,7 @@ import {
 import LockPersonIcon from "@mui/icons-material/LockPerson";
 import { useState } from "react";
 
-import { postData } from "@/helper/common";
+import { postApiData } from "@/helper/common";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
@@ -33,7 +33,7 @@ export default function SignupForm() {
     e.preventDefault();
     setLoading(true);
 
-    const result = await postData(`/api/auth/signup`, {
+    const result = await postApiData(`api/auth/signup`, {
       email,
       password,
       userName,

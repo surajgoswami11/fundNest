@@ -1,101 +1,248 @@
-import axios from "axios";
+const baseUrl = process.env.APIBASEURL;
 
-// ✅ Create basic Axios instance
-const api = axios.create({
-  baseURL: process.env.APIBASEURL,
-  timeout: 20000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-// token
-const getToken = () => {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("token");
-  }
-  return null;
-};
-
-// Add token to headers
-const getAuthHeaders = () => {
-  const token = getToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
-//  GET request
-export const getData = async (url, withToken = false) => {
+export async function getapiData(url) {
+  const apiUrl = `${baseUrl}/${url}`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
   try {
-    const headers = withToken ? getAuthHeaders() : {};
-    const response = await api.get(url, { headers });
-    return response.data;
-  } catch (error) {
-    return handleError(error);
-  }
-};
-
-// POST request
-export const postData = async (url, data, withToken = false) => {
-  try {
-    const headers = withToken ? getAuthHeaders() : {};
-    const response = await api.post(url, data, {
-      headers,
-      withCredentials: true,
-    });
-    return response.data;
-  } catch (error) {
-    return handleError(error);
-  }
-};
-
-//
-export const postFormData = async (url, formData, withToken = true) => {
-  try {
-    const headers = {
-      ...(withToken ? getAuthHeaders() : {}),
-    };
-
-    const response = await api.post(url, formData, {
-      headers,
-      withCredentials: true, 
+    const result = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
 
-    return response.data;
+    const data = await result.json(); // Parse response body once
+    if (!result.ok) {
+      console.log(`Error: ${data.message || "failed to data"}`);
+      return { success: false, message: data.message || "failed to data" };
+    }
+
+    return data;
   } catch (error) {
-    return handleError(error);
+    console.log("Network error", error.message);
+    return { success: false, message: "Network error" };
   }
-};
+}
 
+// get data with token
+//@ when orders lis
 
-//  (for updates)
-export const updateData = async (url, data, withToken = false) => {
+export async function getWithToken(url) {
+  const apiUrl = `${baseUrl}/${url}`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
   try {
-    const headers = withToken ? getAuthHeaders() : {};
-    const response = await api.put(url, data, { headers });
-    return response.data;
+    const result = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await result.json();
+    if (!result.ok) {
+      console.log(`Erorr: ${data.message}`);
+      return { success: false, message: data.message };
+    }
+    return data;
   } catch (error) {
-    return handleError(error);
+    console.log("Network error", error.message);
   }
-};
+}
 
-//  DELETE request
-export const deleteData = async (url, withToken = false) => {
+// when add to cart and address etc
+// @ post api need with token
+
+export async function postWithToken(url, data) {
+  const apiUrl = `${baseUrl}/${url}`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
   try {
-    const headers = withToken ? getAuthHeaders() : {};
-    const response = await api.delete(url, { headers });
-    return response.data;
+    const result = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    console.log(result);
+
+    if (result.ok) {
+      const responseData = await result.json();
+      return responseData;
+    } else {
+      const error = await result.json();
+      return error;
+    }
   } catch (error) {
-    return handleError(error);
+    console.log(`Error: ${error.message}`);
+    return { success: false, message: "Network Error" };
   }
-};
+}
 
-//  Simple error
-const handleError = (error) => {
-  console.error("API Error:", error);
-  return {
-    success: false,
-    message: error.response?.data?.message || "Network Error",
-  };
-};
+export async function postApiData(url, data) {
+  const apiUrl = `${baseUrl}/${url}`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-export default api;
+  try {
+    const result = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (result.ok) {
+      const responseData = await result.json();
+      return responseData;
+    } else {
+      const error = await result.json();
+      return error;
+    }
+  } catch (error) {
+    console.log(`Error: ${error.message}`);
+    return { success: false, message: "Network Error" };
+  }
+}
+
+export async function postApiFormDataToken(url, data) {
+  const apiUrl = `${baseUrl}/${url}`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  try {
+    const result = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: data,
+      credentials: "include",
+    });
+
+    if (result) {
+      const data = await result.json();
+      return data;
+    } else {
+      const error = await result.json();
+      return error;
+    }
+  } catch (error) {
+    console.log("Error:", error.message);
+  }
+}
+
+export async function deleteApiData(url) {
+  const apiUrl = `${baseUrl}/${url}`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  try {
+    const result = await fetch(apiUrl, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (result.ok) {
+      const responseData = await result.json();
+      return responseData;
+    } else {
+      const error = await result.json();
+      return error;
+    }
+  } catch (error) {
+    console.log(`Error ${error.message}`);
+    return { success: false, message: error.message };
+  }
+}
+
+export async function deleteWithToken(url, data) {
+  const apiUrl = `${baseUrl}/${url}`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  try {
+    const result = await fetch(apiUrl, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (result.ok) {
+      const responseData = await result.json();
+      return responseData;
+    } else {
+      const error = await result.json();
+      return error;
+    }
+  } catch (error) {
+    console.log(`Error: ${error.message}`);
+    return { success: false, message: "Network Error" };
+  }
+}
+
+export async function updateWithToken(url, data) {
+  const apiUrl = `${baseUrl}/${url}`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  try {
+    const result = await fetch(apiUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (result.ok) {
+      const responseData = await result.json();
+      return responseData;
+    } else {
+      const error = await result.json();
+      return error;
+    }
+  } catch (error) {
+    console.log(`Error: ${error.message}`);
+    return { success: false, message: "Network Error" };
+  }
+}
+
+export async function updateWithFormToken(url, data) {
+  const apiUrl = `${baseUrl}/${url}`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  try {
+    const result = await fetch(apiUrl, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: data,
+    });
+
+    if (result.ok) {
+      const responseData = await result.json();
+      return responseData;
+    } else {
+      const error = await result.json();
+      return error;
+    }
+  } catch (error) {
+    console.log(`Error: ${error.message}`);
+    return { success: false, message: "Network Error" };
+  }
+}

@@ -17,7 +17,7 @@ import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orien
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import { upperCase } from "lodash";
-import { postFormData } from "@/helper/common";
+import { postApiFormDataToken, postFormData } from "@/helper/common";
 import { toast } from "react-toastify";
 
 // Register plugins
@@ -66,12 +66,8 @@ export default function DocumentUpload() {
     formData.append("aadharImage", aadhar_img[0]?.file);
     formData.append("passbookImage", passbook_img[0]?.file);
 
-    //
-
-    console.log("token in localstorage", localStorage.getItem("token"));
-
     //api response
-    const res = await postFormData("api/user/kyc", formData, true);
+    const res = await postApiFormDataToken("api/user/kyc", formData);
     if (res.success === true) {
       toast.success("Document Uploaded Successfully");
       setAadharNo("");

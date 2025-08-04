@@ -1,7 +1,11 @@
+"use client";
+
+import CampaignCard from "@/components/campaign/CampaignCard";
+
 export default function Campaign() {
   return (
     <>
-      <h1>This is campaign page</h1>
+      <CampaignCard />
     </>
   );
 }
