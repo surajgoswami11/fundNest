@@ -2,6 +2,7 @@ const {
   UploadFile,
   DocumentScanner,
   Timelapse,
+  DocumentScannerRounded,
 } = require("@mui/icons-material");
 const { uniqueId } = require("lodash");
 
@@ -9,7 +10,7 @@ const MenuItem = [
   {
     id: uniqueId(),
     title: "Documents",
-    icon: IconDocument,
+    icon: DocumentScannerRounded,
     href: "/",
     roles: ["admin", "user"],
     children: [

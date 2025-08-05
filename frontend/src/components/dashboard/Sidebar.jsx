@@ -12,6 +12,8 @@ import {
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
+import MenuItem from "../constant/MenuItem";
+
 const Sidebar = () => {
   const { user } = useAuth();
   const [openItems, setOpenItems] = useState({});
@@ -57,12 +59,12 @@ const Sidebar = () => {
         "& .MuiDrawer-paper": {
           width: 240,
           boxSizing: "border-box",
-          backgroundColor: "#1e3a8a", // dark blue, adjust as needed
+          backgroundColor: "#1e3a8a",
           color: "white",
         },
       }}
     >
-      <List>{renderMenuItems(menuItems)}</List>
+      <List>{renderMenuItems(MenuItem)}</List>
     </Drawer>
   );
 };

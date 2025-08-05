@@ -44,8 +44,8 @@ export default function LoginForm() {
       if (userRole === "admin") {
         router.push("/dashboard/admin");
       } else if (userRole === "user") {
-        // router.push("/dashboard/user");
-        router.push("documents/upload-document");
+        router.push("/dashboard/user");
+        // router.push("documents/upload-document");
       } else {
         toast.error("Invalid role");
       }

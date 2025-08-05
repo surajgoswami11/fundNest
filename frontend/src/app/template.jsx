@@ -19,3 +19,5 @@ const DashboardTemplate = ({ children }) => {
     </Box>
   );
 };
+
+export default DashboardTemplate;
