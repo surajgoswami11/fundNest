@@ -10,7 +10,7 @@ passport.use(
       clientID: process.env.FACEBOOK_APP_ID,
       clientSecret: process.env.FACEBOOK_APP_SECRET,
       callbackURL: "/api/auth/facebook/callback",
-      profileFields: ["id", "displayName", "photos", "email"], 
+      profileFields: ["id", "displayName", "name", "photos", "email"],
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -27,6 +27,7 @@ passport.use(
         return done(null, user);
       } catch (error) {
         console.log(error);
+        return done(error, false);
       }
     }
   )
@@ -55,6 +56,7 @@ passport.use(
         return done(null, user);
       } catch (error) {
         console.log(error);
+        return error, false;
       }
     }
   )

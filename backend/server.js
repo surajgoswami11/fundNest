@@ -39,6 +39,8 @@ app.use(
   })
 );
 
+app.use(passport.initialize());
+app.use(passport.session());
 //
 connectDb();
 
@@ -48,9 +50,6 @@ app.use("/api/user", user);
 app.use("/api/admin", admin);
 app.use("/api/fund", fund);
 app.use("/api/payment", payment);
-
-app.use(passport.initialize());
-
 //error handler
 app.use(errorHandler);
 

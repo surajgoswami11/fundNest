@@ -1,6 +1,6 @@
 const express = require("express");
 const { logout, login, signup } = require("../controller/authController");
-const {generateToken}=require("../lib/token")
+const { generateToken } = require("../lib/token");
 //
 const passport = require("passport");
 
@@ -16,6 +16,7 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { session: false }),
   (req, res) => {
+    console.log(req.user);
     const token = generateToken(req.user._id);
     res.redirect(`http://localhost:3000/oauth-success?token=${token}`);
   }
