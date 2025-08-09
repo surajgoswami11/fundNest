@@ -21,7 +21,6 @@ const MetricCard = ({ title, value }) => (
   </Grid>
 );
 const Dashboard = () => {
-  // These values would come from props or context (API data)
   const stats = {
     products: 5,
     users: 2,

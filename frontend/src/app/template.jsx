@@ -1,23 +1,16 @@
-import { Box, CssBaseline } from "@mui/material";
+// app/template.jsx
+"use client";
 import Sidebar from "@/components/dashboard/Sidebar";
-const DashboardTemplate = ({ children }) => {
-  return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <Sidebar />
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          backgroundColor: "#f5f7fa",
-          minHeight: "100vh",
-        }}
-      >
-        {children}
-      </Box>
-    </Box>
-  );
-};
+import { useAuth } from "@/context/AuthContext";
 
-export default DashboardTemplate;
+export default function DashboardTemplate({ children }) {
+  const { user } = useAuth();
+
+  return (
+    <div className="flex min-h-screen">
+      {user && <Sidebar />}
+
+      <main className="flex-1 p-6 bg-gray-50">{children}</main>
+    </div>
+  );
+}
