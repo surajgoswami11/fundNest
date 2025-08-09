@@ -1,6 +1,6 @@
 "use client";
-
 import React, { useState } from "react";
+import { usePathname } from "next/navigation";
 import {
   Drawer,
   List,
@@ -17,12 +17,18 @@ import MenuItem from "../constant/MenuItem";
 const Sidebar = () => {
   const { user } = useAuth();
   const [openItems, setOpenItems] = useState({});
+  const pathname = usePathname();
+
+  // Hide sidebar on non-dashboard routes
+  if (!pathname.startsWith("/dashboard")) return null;
+
   const handleClick = (id) => {
     setOpenItems((prev) => ({ ...prev, [id]: !prev[id] }));
   };
+
   const renderMenuItems = (items) => {
     return items
-      .filter((item) => item.roles.includes(user.role))
+      .filter((item) => item.roles.includes(user?.role))
       .map((item) => {
         const isOpen = openItems[item.id];
         return (
@@ -32,6 +38,7 @@ const Sidebar = () => {
               onClick={() => item.children && handleClick(item.id)}
               component={item.children ? "div" : Link}
               href={item.children ? "#" : item.href}
+              selected={pathname === item.href}
             >
               <ListItemIcon>
                 <item.icon />
@@ -50,6 +57,7 @@ const Sidebar = () => {
         );
       });
   };
+
   return (
     <Drawer
       variant="permanent"
@@ -68,4 +76,5 @@ const Sidebar = () => {
     </Drawer>
   );
 };
+
 export default Sidebar;

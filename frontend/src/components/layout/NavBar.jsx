@@ -17,7 +17,7 @@ const Navbar = () => {
               About
             </Button>
             {/* new commit  */}
-            <Link href="login/">
+            <Link href="/login">
               <Button color="primary" variant="contained" sx={{ m: 1 }}>
                 Login
               </Button>

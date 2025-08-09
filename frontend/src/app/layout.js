@@ -32,7 +32,6 @@ export default function RootLayout({ children }) {
             {children}
           </ThemeProvider>
         </AuthProvider>
-
         <ToastContainer
           position="top-center"
           autoClose={2000}

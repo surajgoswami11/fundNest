@@ -1,4 +1,3 @@
-// app/(dashboard)/layout.jsx
 "use client";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -12,8 +11,6 @@ export default function DashboardLayout({ children }) {
   useEffect(() => {
     if (!user) router.push("/login");
   }, [user, router]);
-
-  if (!user) return <div>Loading...</div>;
 
   return <DashboardTemplate>{children}</DashboardTemplate>;
 }
