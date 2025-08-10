@@ -38,7 +38,7 @@ exports.signup = async (req, res, next) => {
       email,
       password: hashPass,
       contactNumber,
-      role
+      role,
     });
 
     const token = await generateToken(user._id, res);
