@@ -43,10 +43,10 @@ export default function LoginForm() {
 
       if (userRole === "admin") {
         // router.push("/dashboard/admin");
-        router.push("/dashboard");
+        router.push("/dashboard/dash/");
       } else if (userRole === "user") {
         // router.push("/dashboard/user");
-        router.push("/dashboard");
+        router.push("/dashboard/dash/");
       } else {
         toast.error("Invalid role");
       }
