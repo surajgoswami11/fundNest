@@ -1,38 +1,61 @@
-const baseUrl = process.env.APIBASEURL;
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.APIBASEURL;
+
+// Helper to get token
+const getToken = () => {
+  return typeof window !== "undefined" ? localStorage.getItem("token") : null;
+};
+
+// Helper to handle token expiry
+const handleTokenExpiry = () => {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("token");
+    localStorage.removeItem("fundnest-user");
+    // Redirect to login page
+    window.location.href = "/login";
+  }
+};
 
 export async function getapiData(url) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = getToken();
+
   try {
     const result = await fetch(apiUrl, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
 
-    const data = await result.json(); // Parse response body once
+    const data = await result.json();
+
     if (!result.ok) {
-      console.log(`Error: ${data.message || "failed to data"}`);
-      return { success: false, message: data.message || "failed to data" };
+      console.log(`Error: ${data.message || "failed to get data"}`);
+
+      if (result.status === 401) {
+        handleTokenExpiry();
+      }
+
+      return { success: false, message: data.message || "failed to get data" };
     }
 
     return data;
   } catch (error) {
-    console.log("Network error", error.message);
+    console.log("Network error:", error.message);
     return { success: false, message: "Network error" };
   }
 }
 
-// get data with token
-//@ when orders lis
-
 export async function getWithToken(url) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = getToken();
+
+  if (!token) {
+    console.log("No token found");
+    return { success: false, message: "No authentication token" };
+  }
+
   try {
     const result = await fetch(apiUrl, {
       method: "GET",
@@ -41,24 +64,34 @@ export async function getWithToken(url) {
         Authorization: `Bearer ${token}`,
       },
     });
+
     const data = await result.json();
+
     if (!result.ok) {
-      console.log(`Erorr: ${data.message}`);
+      console.log(`Error: ${data.message}`);
+
+      if (result.status === 401) {
+        handleTokenExpiry();
+      }
+
       return { success: false, message: data.message };
     }
+
     return data;
   } catch (error) {
-    console.log("Network error", error.message);
+    console.log("Network error:", error.message);
+    return { success: false, message: "Network error" };
   }
 }
 
-// when add to cart and address etc
-// @ post api need with token
-
 export async function postWithToken(url, data) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = getToken();
+
+  if (!token) {
+    console.log("No token found");
+    return { success: false, message: "No authentication token" };
+  }
 
   try {
     const result = await fetch(apiUrl, {
@@ -69,15 +102,20 @@ export async function postWithToken(url, data) {
       },
       body: JSON.stringify(data),
     });
-    console.log(result);
 
-    if (result.ok) {
-      const responseData = await result.json();
-      return responseData;
-    } else {
-      const error = await result.json();
-      return error;
+    const responseData = await result.json();
+
+    if (!result.ok) {
+      console.log(`Error: ${responseData.message}`);
+
+      if (result.status === 401) {
+        handleTokenExpiry();
+      }
+
+      return { success: false, message: responseData.message };
     }
+
+    return responseData;
   } catch (error) {
     console.log(`Error: ${error.message}`);
     return { success: false, message: "Network Error" };
@@ -86,26 +124,31 @@ export async function postWithToken(url, data) {
 
 export async function postApiData(url, data) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = getToken();
 
   try {
     const result = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify(data),
     });
 
-    if (result.ok) {
-      const responseData = await result.json();
-      return responseData;
-    } else {
-      const error = await result.json();
-      return error;
+    const responseData = await result.json();
+
+    if (!result.ok) {
+      console.log(`Error: ${responseData.message}`);
+
+      if (result.status === 401 && token) {
+        handleTokenExpiry();
+      }
+
+      return { success: false, message: responseData.message };
     }
+
+    return responseData;
   } catch (error) {
     console.log(`Error: ${error.message}`);
     return { success: false, message: "Network Error" };
@@ -114,8 +157,12 @@ export async function postApiData(url, data) {
 
 export async function postApiFormDataToken(url, data) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = getToken();
+
+  if (!token) {
+    return { success: false, message: "No authentication token" };
+  }
+
   try {
     const result = await fetch(apiUrl, {
       method: "POST",
@@ -126,22 +173,29 @@ export async function postApiFormDataToken(url, data) {
       credentials: "include",
     });
 
-    if (result) {
-      const data = await result.json();
-      return data;
-    } else {
-      const error = await result.json();
-      return error;
+    const responseData = await result.json();
+
+    if (!result.ok) {
+      if (result.status === 401) {
+        handleTokenExpiry();
+      }
+      return { success: false, message: responseData.message };
     }
+
+    return responseData;
   } catch (error) {
     console.log("Error:", error.message);
+    return { success: false, message: "Network Error" };
   }
 }
 
 export async function deleteApiData(url) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = getToken();
+
+  if (!token) {
+    return { success: false, message: "No authentication token" };
+  }
 
   try {
     const result = await fetch(apiUrl, {
@@ -151,23 +205,30 @@ export async function deleteApiData(url) {
         Authorization: `Bearer ${token}`,
       },
     });
-    if (result.ok) {
-      const responseData = await result.json();
-      return responseData;
-    } else {
-      const error = await result.json();
-      return error;
+
+    const responseData = await result.json();
+
+    if (!result.ok) {
+      if (result.status === 401) {
+        handleTokenExpiry();
+      }
+      return { success: false, message: responseData.message };
     }
+
+    return responseData;
   } catch (error) {
-    console.log(`Error ${error.message}`);
+    console.log(`Error: ${error.message}`);
     return { success: false, message: error.message };
   }
 }
 
 export async function deleteWithToken(url, data) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = getToken();
+
+  if (!token) {
+    return { success: false, message: "No authentication token" };
+  }
 
   try {
     const result = await fetch(apiUrl, {
@@ -179,13 +240,16 @@ export async function deleteWithToken(url, data) {
       body: JSON.stringify(data),
     });
 
-    if (result.ok) {
-      const responseData = await result.json();
-      return responseData;
-    } else {
-      const error = await result.json();
-      return error;
+    const responseData = await result.json();
+
+    if (!result.ok) {
+      if (result.status === 401) {
+        handleTokenExpiry();
+      }
+      return { success: false, message: responseData.message };
     }
+
+    return responseData;
   } catch (error) {
     console.log(`Error: ${error.message}`);
     return { success: false, message: "Network Error" };
@@ -194,8 +258,11 @@ export async function deleteWithToken(url, data) {
 
 export async function updateWithToken(url, data) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = getToken();
+
+  if (!token) {
+    return { success: false, message: "No authentication token" };
+  }
 
   try {
     const result = await fetch(apiUrl, {
@@ -207,13 +274,16 @@ export async function updateWithToken(url, data) {
       body: JSON.stringify(data),
     });
 
-    if (result.ok) {
-      const responseData = await result.json();
-      return responseData;
-    } else {
-      const error = await result.json();
-      return error;
+    const responseData = await result.json();
+
+    if (!result.ok) {
+      if (result.status === 401) {
+        handleTokenExpiry();
+      }
+      return { success: false, message: responseData.message };
     }
+
+    return responseData;
   } catch (error) {
     console.log(`Error: ${error.message}`);
     return { success: false, message: "Network Error" };
@@ -222,8 +292,11 @@ export async function updateWithToken(url, data) {
 
 export async function updateWithFormToken(url, data) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = getToken();
+
+  if (!token) {
+    return { success: false, message: "No authentication token" };
+  }
 
   try {
     const result = await fetch(apiUrl, {
@@ -234,13 +307,16 @@ export async function updateWithFormToken(url, data) {
       body: data,
     });
 
-    if (result.ok) {
-      const responseData = await result.json();
-      return responseData;
-    } else {
-      const error = await result.json();
-      return error;
+    const responseData = await result.json();
+
+    if (!result.ok) {
+      if (result.status === 401) {
+        handleTokenExpiry();
+      }
+      return { success: false, message: responseData.message };
     }
+
+    return responseData;
   } catch (error) {
     console.log(`Error: ${error.message}`);
     return { success: false, message: "Network Error" };

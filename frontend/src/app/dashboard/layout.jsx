@@ -8,9 +8,9 @@ export default function DashboardLayout({ children }) {
   const { user } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!user) router.push("/login");
-  }, [user, router]);
+  // useEffect(() => {
+  //   if (!user) router.push("/login");
+  // }, [user, router]);
 
   return <DashboardTemplate>{children}</DashboardTemplate>;
 }
