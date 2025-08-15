@@ -41,7 +41,7 @@ exports.signup = async (req, res, next) => {
       role,
     });
 
-    const token = await generateToken(user._id, res);
+    const token = await generateToken(user._id, user.role, res);
 
     res.status(200).json({
       success: true,
@@ -81,7 +81,7 @@ exports.login = async (req, res, next) => {
       return next(createError(401, "Invalid Credentials"));
     }
 
-    const token = await generateToken(user._id, res);
+    const token = await generateToken(user._id, user.role, res);
 
     res.status(200).json({
       success: true,

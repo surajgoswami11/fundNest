@@ -10,7 +10,13 @@ export function AuthProvider({ children }) {
   // Add login function
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem("fundnest-user", JSON.stringify(userData));
+    localStorage.setItem(
+      "fundnest-user",
+      JSON.stringify({
+        ...userData,
+        role: userData.role,
+      })
+    );
   };
 
   // Add logout function

@@ -1,30 +1,23 @@
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.APIBASEURL;
 
-// Helper to get token
-const getToken = () => {
-  return typeof window !== "undefined" ? localStorage.getItem("token") : null;
-};
-
-// Helper to handle token expiry
+// Remove token handling - we're using cookies now
 const handleTokenExpiry = () => {
   if (typeof window !== "undefined") {
-    localStorage.removeItem("token");
     localStorage.removeItem("fundnest-user");
-    // Redirect to login page
     window.location.href = "/login";
   }
 };
 
+// UPDATE ALL REQUESTS TO USE COOKIES INSTEAD OF TOKEN HEADERS
 export async function getapiData(url) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token = getToken();
 
   try {
     const result = await fetch(apiUrl, {
       method: "GET",
+      credentials: "include", // ADD THIS FOR COOKIES
       headers: {
         "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
 
@@ -49,19 +42,13 @@ export async function getapiData(url) {
 
 export async function getWithToken(url) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token = getToken();
-
-  if (!token) {
-    console.log("No token found");
-    return { success: false, message: "No authentication token" };
-  }
 
   try {
     const result = await fetch(apiUrl, {
       method: "GET",
+      credentials: "include", // ADD THIS FOR COOKIES
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -86,19 +73,13 @@ export async function getWithToken(url) {
 
 export async function postWithToken(url, data) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token = getToken();
-
-  if (!token) {
-    console.log("No token found");
-    return { success: false, message: "No authentication token" };
-  }
 
   try {
     const result = await fetch(apiUrl, {
       method: "POST",
+      credentials: "include", // ADD THIS FOR COOKIES
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });
@@ -124,14 +105,13 @@ export async function postWithToken(url, data) {
 
 export async function postApiData(url, data) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token = getToken();
 
   try {
     const result = await fetch(apiUrl, {
       method: "POST",
+      credentials: "include", // ADD THIS FOR COOKIES
       headers: {
         "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify(data),
     });
@@ -141,7 +121,7 @@ export async function postApiData(url, data) {
     if (!result.ok) {
       console.log(`Error: ${responseData.message}`);
 
-      if (result.status === 401 && token) {
+      if (result.status === 401) {
         handleTokenExpiry();
       }
 
@@ -157,20 +137,12 @@ export async function postApiData(url, data) {
 
 export async function postApiFormDataToken(url, data) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token = getToken();
-
-  if (!token) {
-    return { success: false, message: "No authentication token" };
-  }
 
   try {
     const result = await fetch(apiUrl, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      credentials: "include", // ADD THIS FOR COOKIES
       body: data,
-      credentials: "include",
     });
 
     const responseData = await result.json();
@@ -191,18 +163,13 @@ export async function postApiFormDataToken(url, data) {
 
 export async function deleteApiData(url) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token = getToken();
-
-  if (!token) {
-    return { success: false, message: "No authentication token" };
-  }
 
   try {
     const result = await fetch(apiUrl, {
       method: "DELETE",
+      credentials: "include", // ADD THIS FOR COOKIES
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -224,18 +191,13 @@ export async function deleteApiData(url) {
 
 export async function deleteWithToken(url, data) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token = getToken();
-
-  if (!token) {
-    return { success: false, message: "No authentication token" };
-  }
 
   try {
     const result = await fetch(apiUrl, {
       method: "DELETE",
+      credentials: "include", // ADD THIS FOR COOKIES
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });
@@ -258,18 +220,13 @@ export async function deleteWithToken(url, data) {
 
 export async function updateWithToken(url, data) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token = getToken();
-
-  if (!token) {
-    return { success: false, message: "No authentication token" };
-  }
 
   try {
     const result = await fetch(apiUrl, {
       method: "PUT",
+      credentials: "include", // ADD THIS FOR COOKIES
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });
@@ -292,18 +249,11 @@ export async function updateWithToken(url, data) {
 
 export async function updateWithFormToken(url, data) {
   const apiUrl = `${baseUrl}/${url}`;
-  const token = getToken();
-
-  if (!token) {
-    return { success: false, message: "No authentication token" };
-  }
 
   try {
     const result = await fetch(apiUrl, {
       method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      credentials: "include", // ADD THIS FOR COOKIES
       body: data,
     });
 
