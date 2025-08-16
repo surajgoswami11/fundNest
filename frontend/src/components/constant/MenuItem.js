@@ -19,7 +19,7 @@ const MenuItem = [
         id: uniqueId(),
         title: "Uplaod Documents",
         icon: UploadFile,
-        href: "/",
+        href: "/dashboard/document/upload-document/",
         roles: ["user"],
       },
       {
