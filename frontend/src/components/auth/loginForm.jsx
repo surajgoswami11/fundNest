@@ -16,13 +16,11 @@ import Link from "next/link";
 import { postApiData } from "@/helper/common";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../../context/AuthContext";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
 
   const router = useRouter();
 
@@ -36,19 +34,7 @@ export default function LoginForm() {
     });
     if (result.success === true) {
       toast.success("login successfully");
-      //
-      login(result.user);
-
-      const userRole = result.user.role;
-
-      if (userRole === "admin") {
-        router.push("/dashboard/dash/");
-      } else if (userRole === "user") {
-        router.push("/dashboard/dash/");
-      } else {
-        toast.error("Invalid role");
-      }
-      setLoading(false);
+      setLoading(false)
     } else {
       toast.error(result.message, "Something is wrong");
       setLoading(false);
@@ -166,8 +152,8 @@ export default function LoginForm() {
               variant="contained"
               startIcon={<FacebookRounded />}
               onClick={() =>
-                (window.location.href =
-                  "http://localhost:3030/api/user/facebook")
+              (window.location.href =
+                "http://localhost:3030/api/user/facebook")
               }
               sx={{
                 backgroundColor: "#3b5998",
