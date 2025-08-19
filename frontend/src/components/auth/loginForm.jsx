@@ -34,6 +34,7 @@ export default function LoginForm() {
     });
     if (result.success === true) {
       toast.success("login successfully");
+      router.push("/dashboard/")
       setLoading(false)
     } else {
       toast.error(result.message, "Something is wrong");
