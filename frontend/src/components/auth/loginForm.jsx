@@ -16,6 +16,7 @@ import Link from "next/link";
 import { postApiData } from "@/helper/common";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -23,21 +24,51 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+  const { login } = useAuth(); // Get login function from context
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const result = await postApiData("api/auth/login", {
-      email,
-      password,
-    });
-    if (result.success === true) {
-      toast.success("login successfully");
-      router.push("/dashboard/")
-      setLoading(false)
-    } else {
-      toast.error(result.message, "Something is wrong");
+    try {
+      const result = await postApiData("api/auth/login", {
+        email,
+        password,
+      });
+      
+      if (result.success === true) {
+        // Store user data in auth context with proper structure
+        const userData = {
+          id: result.user?.id || result.data?.id,
+          name: result.user?.name || result.data?.name || result.user?.userName || result.data?.userName,
+          email: result.user?.email || result.data?.email || email,
+          role: result.user?.role || result.data?.role || 'user', // Default to 'user' if no role specified
+          contactNumber: result.user?.contactNumber || result.data?.contactNumber,
+          token: result.token || result.data?.token,
+          profileImage: result.user?.profileImage || result.data?.profileImage
+        };
+
+        // Use the login function from context
+        login(userData);
+        
+        // Store token separately for API calls
+        if (userData.token) {
+          localStorage.setItem('fundnest-token', userData.token);
+        }
+        
+        toast.success("Login successfully!");
+        
+        // Redirect to dashboard
+        router.push("/dashboard");
+        
+        setLoading(false);
+      } else {
+        toast.error(result.message || "Login failed");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Something went wrong. Please try again.");
       setLoading(false);
     }
   };
@@ -110,7 +141,21 @@ export default function LoginForm() {
             onChange={(e) => setEmail(e.target.value)}
             margin="normal"
             required
-            sx={{ input: { color: "white" }, label: { color: "white" } }}
+            sx={{ 
+              input: { color: "white" }, 
+              label: { color: "white" },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "rgba(255,255,255,0.5)",
+                },
+                "&:hover fieldset": {
+                  borderColor: "rgba(255,255,255,0.7)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "white",
+                },
+              },
+            }}
           />
           <TextField
             label="Password"
@@ -121,7 +166,21 @@ export default function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             margin="normal"
             required
-            sx={{ input: { color: "white" }, label: { color: "white" } }}
+            sx={{ 
+              input: { color: "white" }, 
+              label: { color: "white" },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "rgba(255,255,255,0.5)",
+                },
+                "&:hover fieldset": {
+                  borderColor: "rgba(255,255,255,0.7)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "white",
+                },
+              },
+            }}
           />
           <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
             <Button
@@ -153,8 +212,8 @@ export default function LoginForm() {
               variant="contained"
               startIcon={<FacebookRounded />}
               onClick={() =>
-              (window.location.href =
-                "http://localhost:3030/api/user/facebook")
+                (window.location.href =
+                  "http://localhost:3030/api/user/facebook")
               }
               sx={{
                 backgroundColor: "#3b5998",
@@ -185,7 +244,7 @@ export default function LoginForm() {
               Google
             </Button>
           </Box>
-          <hr />
+          <hr style={{ border: "1px solid rgba(255,255,255,0.2)", margin: "20px 0" }} />
           <Typography
             variant="body2"
             align="center"

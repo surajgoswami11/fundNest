@@ -16,120 +16,46 @@ import {
     useTheme,
 } from "@mui/material";
 import {
-    Dashboard,
-    People,
-    Campaign,
     ExpandLess,
     ExpandMore,
-    DocumentScanner,
-    UploadFile,
-    Timelapse,
-    Visibility,
-    Create,
 } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import MenuItem from "@/components/constant/MenuItem";
 
 const DRAWER_WIDTH = 280;
 
-// Menu items matching your MenuItem.js structure
-const menuItems = [
-    {
-        id: "dashboard",
-        title: "Dashboard",
-        icon: Dashboard,
-        href: "/dashboard",
-        roles: ["admin", "user"],
-    },
-    {
-        id: "users",
-        title: "Users",
-        icon: People,
-        href: "/dashboard/users",
-        roles: ["admin"], // Only admin can see users
-    },
-    {
-        id: "kyc",
-        title: "KYC Documents",
-        icon: DocumentScanner,
-        roles: ["admin", "user"],
-        children: [
-            {
-                id: "upload-docs",
-                title: "Upload Documents",
-                icon: UploadFile,
-                href: "/dashboard/documents/upload-document",
-                roles: ["user"], // Only users upload documents
-            },
-            {
-                id: "view-docs",
-                title: "View Documents",
-                icon: Visibility,
-                href: "/dashboard/documents/view-document",
-                roles: ["admin", "user"],
-            },
-            {
-                id: "kyc-status",
-                title: "KYC Status",
-                icon: Timelapse,
-                href: "/dashboard/documents/kyc-status",
-                roles: ["admin", "user"],
-            },
-        ],
-    },
-    {
-        id: "campaign",
-        title: "Campaign Management",
-        icon: Campaign,
-        roles: ["admin", "user"],
-        children: [
-            {
-                id: "create-campaign",
-                title: "Create Campaign",
-                icon: Create,
-                href: "/dashboard/campaign/create",
-                roles: ["user"], // Only users create campaigns
-            },
-            {
-                id: "view-campaign",
-                title: "View Campaigns",
-                icon: Visibility,
-                href: "/dashboard/campaign/view",
-                roles: ["admin", "user"],
-            },
-        ],
-    },
-];
-
 export default function Sidebar({ open, onClose }) {
     const [expandedItems, setExpandedItems] = useState({});
-    const { user } = useAuth();
+    const { user, hasRole, getUserDisplayName } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
     const theme = useTheme();
 
     const handleItemClick = (item) => {
-        if (item.children) {
+        if (item.children && item.children.length > 0) {
+            // Toggle expansion for parent items
             setExpandedItems((prev) => ({
                 ...prev,
                 [item.id]: !prev[item.id],
             }));
         } else if (item.href) {
+            // Navigate to the page
             router.push(item.href);
             if (onClose) onClose(); // Close sidebar on mobile after navigation
         }
     };
 
-    const hasPermission = (roles) => {
-        return roles.includes(user?.role || "user");
-    };
-
     const renderMenuItem = (item, level = 0) => {
-        if (!hasPermission(item.roles)) return null;
+        // Check if user has permission to see this menu item
+        if (!hasRole(item.roles)) {
+            return null;
+        }
 
         const Icon = item.icon;
         const isExpanded = expandedItems[item.id];
         const hasChildren = item.children && item.children.length > 0;
-        const isCurrentPage = item.href === router.pathname;
+        const isCurrentPage = item.href === pathname;
 
         return (
             <React.Fragment key={item.id}>
@@ -191,12 +117,25 @@ export default function Sidebar({ open, onClose }) {
                 {hasChildren && (
                     <Collapse in={isExpanded} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            {item.children.map((child) => renderMenuItem(child, 1))}
+                            {item.children
+                                .filter(child => hasRole(child.roles))
+                                .map((child) => renderMenuItem(child, 1))}
                         </List>
                     </Collapse>
                 )}
             </React.Fragment>
         );
+    };
+
+    // Get user initials for avatar
+    const getUserInitials = () => {
+        const name = getUserDisplayName();
+        return name
+            .split(" ")
+            .map(word => word.charAt(0))
+            .join("")
+            .toUpperCase()
+            .slice(0, 2);
     };
 
     return (
@@ -217,7 +156,7 @@ export default function Sidebar({ open, onClose }) {
                 },
             }}
         >
-            {/* Header Section - Matches your screenshot */}
+            {/* Header Section - FundNest Branding */}
             <Box
                 sx={{
                     p: 3,
@@ -238,14 +177,14 @@ export default function Sidebar({ open, onClose }) {
                         fontWeight: 600,
                     }}
                 >
-                    E
+                    F
                 </Avatar>
                 <Box>
                     <Typography variant="h6" fontWeight={700} sx={{ fontSize: "1.1rem" }}>
-                        Emaavy
+                        FundNest
                     </Typography>
                     <Typography variant="caption" sx={{ opacity: 0.8, fontSize: "0.75rem" }}>
-                        Emaavy Portal
+                        Crowdfunding Platform
                     </Typography>
                 </Box>
             </Box>
@@ -261,11 +200,19 @@ export default function Sidebar({ open, onClose }) {
                             fontSize: "0.9rem",
                         }}
                     >
-                        {user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
+                        {user?.profileImage ? (
+                            <img
+                                src={user.profileImage}
+                                alt="Profile"
+                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            />
+                        ) : (
+                            getUserInitials()
+                        )}
                     </Avatar>
                     <Box>
                         <Typography variant="body2" fontWeight={600} sx={{ fontSize: "0.85rem" }}>
-                            {user?.name || user?.email || "User"}
+                            {getUserDisplayName()}
                         </Typography>
                         <Typography variant="caption" sx={{ opacity: 0.7, fontSize: "0.7rem" }}>
                             {user?.role === "admin" ? "Administrator" : "User"}
@@ -279,7 +226,9 @@ export default function Sidebar({ open, onClose }) {
             {/* Navigation Menu */}
             <Box sx={{ flexGrow: 1, py: 2 }}>
                 <List>
-                    {menuItems.map((item) => renderMenuItem(item))}
+                    {MenuItem
+                        .filter(item => hasRole(item.roles))
+                        .map((item) => renderMenuItem(item))}
                 </List>
             </Box>
 
@@ -292,7 +241,10 @@ export default function Sidebar({ open, onClose }) {
                 }}
             >
                 <Typography variant="caption" sx={{ opacity: 0.7, fontSize: "0.7rem" }}>
-                    © 2025 Emaavy Portals
+                    © 2025 FundNest Platform
+                </Typography>
+                <Typography variant="caption" sx={{ opacity: 0.5, fontSize: "0.65rem", display: "block" }}>
+                    Version 1.0.0
                 </Typography>
             </Box>
         </Drawer>
