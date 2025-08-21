@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Box, Toolbar, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import DashboardContent from "./DashboardContent"; // Add this import
 
 export default function DashboardLayout({ children }) {
     const theme = useTheme();
@@ -44,7 +45,7 @@ export default function DashboardLayout({ children }) {
                     overflowY: "auto",
                     overflowX: "hidden",
                 }}>
-                    {children}
+                    {children || <DashboardContent />}
                 </Box>
             </Box>
         </Box>
