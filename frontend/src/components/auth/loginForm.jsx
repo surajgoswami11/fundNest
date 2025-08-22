@@ -35,30 +35,21 @@ export default function LoginForm() {
         email,
         password,
       });
-      
+
       if (result.success === true) {
-        // Store user data in auth context with proper structure
         const userData = {
-          id: result.user?.id || result.data?.id,
-          name: result.user?.name || result.data?.name || result.user?.userName || result.data?.userName,
-          email: result.user?.email || result.data?.email || email,
-          role: result.user?.role || result.data?.role || 'user', // Default to 'user' if no role specified
-          contactNumber: result.user?.contactNumber || result.data?.contactNumber,
-          token: result.token || result.data?.token,
-          profileImage: result.user?.profileImage || result.data?.profileImage
+          ...result.user,
+          token: result.token
         };
 
         login(userData);
-        
-        if (userData.token) {
-          localStorage.setItem('fundnest-token', userData.token);
-        }
-        
+
+        localStorage.setItem('fundnest-token', userData.token);
+
         toast.success("Login successfully!");
-        
-        // Redirect to dashboard
+
         router.push("/dashboard");
-        
+
         setLoading(false);
       } else {
         toast.error(result.message || "Login failed");
@@ -139,8 +130,8 @@ export default function LoginForm() {
             onChange={(e) => setEmail(e.target.value)}
             margin="normal"
             required
-            sx={{ 
-              input: { color: "white" }, 
+            sx={{
+              input: { color: "white" },
               label: { color: "white" },
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
@@ -164,8 +155,8 @@ export default function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             margin="normal"
             required
-            sx={{ 
-              input: { color: "white" }, 
+            sx={{
+              input: { color: "white" },
               label: { color: "white" },
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
@@ -210,8 +201,8 @@ export default function LoginForm() {
               variant="contained"
               startIcon={<FacebookRounded />}
               onClick={() =>
-                (window.location.href =
-                  "http://localhost:3030/api/user/facebook")
+              (window.location.href =
+                "http://localhost:3030/api/user/facebook")
               }
               sx={{
                 backgroundColor: "#3b5998",
