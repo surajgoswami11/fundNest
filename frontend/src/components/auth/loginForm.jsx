@@ -48,10 +48,8 @@ export default function LoginForm() {
           profileImage: result.user?.profileImage || result.data?.profileImage
         };
 
-        // Use the login function from context
         login(userData);
         
-        // Store token separately for API calls
         if (userData.token) {
           localStorage.setItem('fundnest-token', userData.token);
         }
