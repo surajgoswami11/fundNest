@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
 
@@ -37,7 +36,7 @@ export function AuthProvider({ children }) {
           const userData = JSON.parse(savedUser);
 
           if (!userData.role) {
-            userData.role = 'user';
+            userData.role = "user";
           }
 
           if (savedToken && !userData.token) {
@@ -88,11 +87,7 @@ export function AuthProvider({ children }) {
     isAuthenticated: !!user,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
