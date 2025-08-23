@@ -88,6 +88,57 @@ exports.uploadKyc = async (req, res, next) => {
   }
 };
 
+// this is for admin get all user with kyc
+exports.getKyc = async (req, res, next) => {
+  try {
+    const kyc = await KYC.find().sort({ createdAt: -1 })
+    if (!kyc) {
+      return next(createError(404, "No KYC records found"));
+    }
+
+    res.status(200).json({ success: true, kyc })
+
+  } catch (err) {
+    next(err);
+  }
+
+}
+
+// this is for user to get his kyc status
+exports.getKycById = async (req, res, next) => {
+  try {
+    const userId = req.user._id
+    const findKyc = await KYC.findOne({ user: userId }).populate("user", "-password")
+
+    if (!findKyc) {
+      return next(createError(404, "No KYC found"));
+    }
+
+
+    res.status(200).json({ success: true, findKyc })
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+// help to get user kyc data
+exports.getKycStatus = async (req, res, next) => {
+  try {
+    const { status } = req.params
+    const users = await User.find({ kycStatus: status }).select("-password");
+    const kycData = await KYC.find().populate({
+      path: 'user',
+      match: { kycStatus: status },
+      select: '-password'
+    });
+
+    res.status(200).json({ success: true, users, kycData });
+  } catch (error) {
+    next(error)
+  }
+}
+
 exports.updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;

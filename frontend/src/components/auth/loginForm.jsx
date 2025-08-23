@@ -24,7 +24,7 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
-  const { login } = useAuth(); 
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

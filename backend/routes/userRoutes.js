@@ -5,6 +5,9 @@ const {
   getAllUser,
   getUserById,
   deleteuser,
+  getKyc,
+  getKycById,
+  getKycStatus,
 } = require("../controller/userController");
 
 const upload = require("../middlewares/multer");
@@ -12,8 +15,7 @@ const { protectRoutes, authorize } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.get("/", protectRoutes, authorize("admin"), getAllUser);
-router.get("/:id", protectRoutes, authorize("admin"), getUserById);
+
 
 router.post(
   "/kyc",
@@ -25,6 +27,17 @@ router.post(
   ]),
   uploadKyc
 );
+router.get("/", protectRoutes, authorize("admin"), getAllUser);
+router.get("/kyc-documents", protectRoutes, authorize("admin"), getKyc)
+router.get("/myKyc", protectRoutes, getKycById)
+router.get("/kycStatus/:status", protectRoutes, getKycStatus)
+
+
+
+
+
+router.get("/:id", protectRoutes, authorize("admin"), getUserById);
+
 router.put(
   "/update-user/:id",
   protectRoutes,

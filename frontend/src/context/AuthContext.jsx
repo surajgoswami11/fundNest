@@ -1,6 +1,8 @@
 "use client";
 
 import React, { createContext, useState, useContext, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { postWithToken } from "../helper/common";
 
 const AuthContext = createContext();
 
@@ -18,7 +20,8 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await postWithToken("api/auth/logout")
     setUser(null);
     localStorage.removeItem("fundnest-user");
     localStorage.removeItem("fundnest-token");
