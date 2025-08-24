@@ -6,6 +6,8 @@ const {
   getUserById,
   deleteuser,
   getKyc,
+  getKycById,
+  getKycStatus,
 } = require("../controller/userController");
 
 const upload = require("../middlewares/multer");
@@ -28,8 +30,9 @@ router.post(
 
 router.get("/", protectRoutes, authorize("admin"), getAllUser);
 router.get("/:id", protectRoutes, authorize("admin"), getUserById);
-router.get("/all", protectRoutes, getKyc)
-
+router.get("/kyc-documents", protectRoutes, getKyc)
+router.get("/myKyc", protectRoutes, getKycById)
+router.get("/kycStatus/:status", protectRoutes, getKycStatus)
 
 router.put(
   "/update-user/:id",

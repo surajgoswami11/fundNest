@@ -1,11 +1,20 @@
 const User = require("../models/userModel");
 const createError = require("http-errors");
 
-//
 exports.pendingKYC = async (req, res, next) => {
   try {
-    const user = await User.find({ kycStatus: "pending" }).select("-password");
-    res.status(200).json({ success: true, user });
+    const users = await User.find({ kycStatus: "pending" }).select("-password");
+    const kycDocuments = await KYC.find().populate({
+      path: 'user',
+      match: { kycStatus: 'pending' },
+      select: '-password'
+    });
+
+    res.status(200).json({
+      success: true,
+      users,
+      kycDocuments: kycDocuments.filter(doc => doc.user)
+    });
   } catch (error) {
     next(error);
   }
