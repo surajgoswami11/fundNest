@@ -104,11 +104,11 @@ exports.getKyc = async (req, res, next) => {
 
 }
 
-// this is fo ruser to get his kyc status
+// this is for user to get his kyc status
 exports.getKycById = async (req, res, next) => {
   try {
-    const userId = req.user
-    const findKyc = await FindById({ userId }).populate("user ", "-password")
+    const userId = req.user._id
+    const findKyc = await KYC.findOne({ user: userId }).populate("user", "-password")
 
     if (!findKyc) {
       return next(createError(404, "No KYC found"));

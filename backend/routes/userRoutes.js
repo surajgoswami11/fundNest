@@ -27,12 +27,16 @@ router.post(
   ]),
   uploadKyc
 );
-
 router.get("/", protectRoutes, authorize("admin"), getAllUser);
-router.get("/:id", protectRoutes, authorize("admin"), getUserById);
-router.get("/kyc-documents", protectRoutes, getKyc)
+router.get("/kyc-documents", protectRoutes, authorize("admin"), getKyc)
 router.get("/myKyc", protectRoutes, getKycById)
 router.get("/kycStatus/:status", protectRoutes, getKycStatus)
+
+
+
+
+
+router.get("/:id", protectRoutes, authorize("admin"), getUserById);
 
 router.put(
   "/update-user/:id",

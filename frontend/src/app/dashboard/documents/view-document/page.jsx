@@ -1,7 +1,6 @@
 "use client";
 
 import {
-    Button,
     FormLabel,
     Paper,
     TextField,
@@ -18,22 +17,19 @@ import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import { getWithToken, postApiFormDataToken } from "@/helper/common";
 import { toast } from "react-toastify";
+import StickyHeadTable from "@/components/listing/StickyHeadTable";
 
 // Register plugins
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 export default function ViewDocument() {
-    const [accountNo, setAccountNo] = useState("");
-    const [panNo, setPanNo] = useState("");
-    const [acHolderName, setAcHolderName] = useState("");
-    const [bankName, setBankName] = useState("");
-    const [IFSC, setIFSC] = useState("");
-    const [aadharNo, setAadharNo] = useState("");
-    const [passbook_img, setPassbook_img] = useState([]);
-    const [aadhar_img, setAadhar_img] = useState([]);
-    const [pan_img, setPan_img] = useState([]);
-    const [branchName, setBranchName] = useState();
-    const [loader, setLoader] = useState(false);
+
+
+    // 
+    const [userKyc, setUserKyc] = useState([])
+    const [adminKyc, setadminKyc] = useState([])
+
+    const parseUser = JSON.parse(localStorage.getItem("fundnest-user") || "{}")
 
     //
     const formRowStyle = {
@@ -50,8 +46,19 @@ export default function ViewDocument() {
 
 
     const getKycDocuments = async () => {
-        const res = await getWithToken("api/user/kyc/all")
-        console.log(res, "this is all kyc user entity")
+        if (parseUser.role === "admin") {
+            const res = await getWithToken("api/user/kyc-documents")
+            console.log(res, "this is admin role data")
+            setadminKyc(res?.kyc)
+
+
+        } else {
+            const res = await getWithToken("api/user/myKyc")
+            console.log(res, "simple response")
+            setUserKyc(res.findKyc)
+        }
+
+
     }
 
     useEffect(() => {
@@ -60,182 +67,153 @@ export default function ViewDocument() {
 
 
     return (
-        <Paper
-            elevation={4}
-            style={{
-                padding: "40px",
-                margin: "40px auto",
-                maxWidth: "1100px",
-                borderRadius: "16px",
-                backgroundColor: "#f9f9f9",
-            }}
-        >
-            <Typography
-                variant="h5"
-                align="center"
-                gutterBottom
-                style={{ fontWeight: "600", marginBottom: "36px" }}
-            >
-                📑 Document Upload
-            </Typography>
 
-            {/* bank details */}
-            <Box sx={formRowStyle}>
-                <Box sx={halfWidthBox}>
-                    <FormLabel>Account Holder Name</FormLabel>
-                    <TextField
-                        fullWidth
-                        size="small"
-                        margin="dense"
-                        placeholder="As Per Documents"
-                        value={acHolderName}
-                        onChange={(e) => setAcHolderName(e.target.value)}
-                    />
-                </Box>
-                <Box sx={halfWidthBox}>
-                    <FormLabel>Enter Bank Name</FormLabel>
-                    <TextField
-                        fullWidth
-                        size="small"
-                        margin="dense"
-                        placeholder="Enter Bank Name"
-                        value={bankName}
-                        onChange={(e) => setBankName(e.target.value)}
-                    />
-                </Box>
-            </Box>
-            {/* IFSc */}
-            <Box sx={formRowStyle}>
-                <Box sx={halfWidthBox}>
-                    <FormLabel>Enter IFSC Number</FormLabel>
-                    <TextField
-                        fullWidth
-                        size="small"
-                        margin="dense"
-                        placeholder="IFSC Number"
-                        value={IFSC}
-                        onChange={(e) => setIFSC(e.target.value)}
-                    />
-                </Box>
-                <Box sx={halfWidthBox}>
-                    <FormLabel>Branch Name</FormLabel>
-                    <TextField
-                        fullWidth
-                        size="small"
-                        margin="dense"
-                        placeholder="Enter Branch Name"
-                        value={branchName}
-                        onChange={(e) => setBranchName(e.target.value)}
-                    />
-                </Box>
-            </Box>
-
-            {/* Account No + Passbook */}
-            <Box sx={formRowStyle}>
-                <Box sx={halfWidthBox}>
-                    <FormLabel>Account Number</FormLabel>
-                    <TextField
-                        fullWidth
-                        size="small"
-                        margin="dense"
-                        placeholder="Enter Account Number"
-                        value={accountNo}
-                        onChange={(e) => setAccountNo(e.target.value)}
-                    />
-                </Box>
-                <Box sx={halfWidthBox}>
-                    <FormLabel>Upload Passbook Image</FormLabel>
-                    <FilePond
-                        files={passbook_img}
-                        onupdatefiles={setPassbook_img}
-                        allowMultiple={true}
-                        maxFiles={2}
-                        credits={false}
-                        labelIdle='Drag & Drop or <span class="filepond--label-action">Browse</span>'
-                    />
-                </Box>
-            </Box>
-
-            {/* Aadhar No + Aadhar Image */}
-            <Box sx={formRowStyle}>
-                <Box sx={halfWidthBox}>
-                    <FormLabel>Aadhar Number</FormLabel>
-                    <TextField
-                        fullWidth
-                        size="small"
-                        margin="dense"
-                        placeholder="Enter Aadhar Number"
-                        value={aadharNo}
-                        onChange={(e) => setAadharNo(e.target.value)}
-                        inputProps={{
-                            minLength: 12,
-                            maxLength: 12,
+        <>
+            {
+                parseUser.role === "user" && userKyc && (
+                    <Paper
+                        elevation={4}
+                        style={{
+                            padding: "40px",
+                            margin: "40px auto",
+                            maxWidth: "1100px",
+                            borderRadius: "16px",
+                            backgroundColor: "#f9f9f9",
                         }}
-                    />
-                </Box>
-                <Box sx={halfWidthBox}>
-                    <FormLabel>Upload Aadhar Image</FormLabel>
-                    <FilePond
-                        files={aadhar_img}
-                        onupdatefiles={setAadhar_img}
-                        allowMultiple={true}
-                        maxFiles={2}
-                        credits={false}
-                        labelIdle='Drag & Drop or <span class="filepond--label-action">Browse</span>'
-                    />
-                </Box>
-            </Box>
+                    >
+                        {/* bank details */}
+                        <Box sx={formRowStyle}>
+                            <Box sx={halfWidthBox}>
+                                <FormLabel>Account Holder Name</FormLabel>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    margin="dense"
+                                    placeholder="As Per Documents"
+                                    value={userKyc?.accountHolderName}
+                                    disabled
+                                />
+                            </Box>
+                            <Box sx={halfWidthBox}>
+                                <FormLabel>Enter Bank Name</FormLabel>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    margin="dense"
+                                    placeholder="Enter Bank Name"
+                                    value={userKyc?.bankName}
+                                    disabled
+                                />
+                            </Box>
+                        </Box>
+                        {/* IFSc */}
+                        <Box sx={formRowStyle}>
+                            <Box sx={halfWidthBox}>
+                                <FormLabel>Enter IFSC Number</FormLabel>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    margin="dense"
+                                    value={userKyc?.IFSC}
+                                    disabled
+                                />
+                            </Box>
+                            <Box sx={halfWidthBox}>
+                                <FormLabel>Branch Name</FormLabel>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    margin="dense"
+                                    disabled
+                                    value={userKyc?.branchName}
+                                />
+                            </Box>
+                        </Box>
 
-            {/* PAN No + PAN Image */}
-            <Box sx={formRowStyle}>
-                <Box sx={halfWidthBox}>
-                    <FormLabel>PAN Number</FormLabel>
-                    <TextField
-                        fullWidth
-                        size="small"
-                        margin="dense"
-                        placeholder="Enter PAN Number"
-                        value={panNo}
-                        onChange={(e) => setPanNo(e.target.value.toUpperCase())}
-                        inputProps={{
-                            minLength: "10",
-                            maxLength: "10",
-                        }}
-                    />
-                </Box>
-                <Box sx={halfWidthBox}>
-                    <FormLabel>Upload PAN Image</FormLabel>
-                    <FilePond
-                        files={pan_img}
-                        onupdatefiles={setPan_img}
-                        allowMultiple={true}
-                        maxFiles={2}
-                        credits={false}
-                        labelIdle='Drag & Drop or <span class="filepond--label-action">Browse</span>'
-                    />
-                </Box>
-            </Box>
+                        {/* Account No + Passbook */}
+                        <Box sx={formRowStyle}>
+                            <Box sx={halfWidthBox}>
+                                <FormLabel>Account Number</FormLabel>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    margin="dense"
+                                    disabled
+                                    value={userKyc?.accountNo}
+                                />
+                            </Box>
+                            <Box sx={halfWidthBox}>
+                                <FormLabel>Upload Passbook Image</FormLabel>
+                                <FilePond
+                                    files={userKyc?.passbookImage}
+                                    credits={false}
 
-            {/* Buttons */}
-            {/* <Box sx={{ textAlign: "center", marginTop: "30px" }}>
-                <Button
-                    variant="outlined"
-                    color="error"
-                    sx={{ paddingX: 4, paddingY: 1, m: 2 }}
-                    onClick={handleReset}
-                >
-                    Reset
-                </Button>
-                <Button
-                    disabled={loader}
-                    variant="contained"
-                    color="primary"
-                    sx={{ m: 2, paddingX: 4, paddingY: 1 }}
-                    onClick={handleSubmit}
-                >
-                    {loader ? "Submitting.." : "submit"}
-                </Button>
-            </Box> */}
-        </Paper>
+                                />
+                            </Box>
+                        </Box>
+
+                        {/* Aadhar No + Aadhar Image */}
+                        <Box sx={formRowStyle}>
+                            <Box sx={halfWidthBox}>
+                                <FormLabel>Aadhar Number</FormLabel>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    margin="dense"
+                                    disabled
+                                    value={userKyc?.aadharNo}
+
+                                />
+                            </Box>
+                            <Box sx={halfWidthBox}>
+                                <FormLabel>Upload Aadhar Image</FormLabel>
+                                <FilePond
+                                    files={userKyc?.aadharImage}
+                                    credits={false}
+                                />
+                            </Box>
+                        </Box>
+
+                        {/* PAN No + PAN Image */}
+                        <Box sx={formRowStyle}>
+                            <Box sx={halfWidthBox}>
+                                <FormLabel>PAN Number</FormLabel>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    margin="dense"
+                                    value={userKyc?.panNo}
+                                    disabled
+                                />
+                            </Box>
+                            <Box sx={halfWidthBox}>
+                                <FormLabel>Upload PAN Image</FormLabel>
+                                <FilePond
+                                    files={userKyc?.panImage}
+                                    credits={false}
+                                    disabled
+                                />
+                            </Box>
+                        </Box>
+
+
+                    </Paper>
+                )
+
+            }
+            {
+                parseUser.role === "admin" && adminKyc && (
+                    <StickyHeadTable
+                        columns={[
+                            { id: 'accountHolderName', label: 'Account Holder Name', minWidth: 170 },
+                            { id: 'bankName', label: 'Bank Name', minWidth: 150 },
+                            { id: 'accountNo', label: 'Account Number', minWidth: 150 },
+                            { id: 'IFSC', label: 'IFSC Code', minWidth: 150 },
+                            { id: 'branchName', label: 'Branch Name', minWidth: 150 },
+                        ]}
+                        rows={adminKyc} />
+                )
+            }
+        </>
     );
 }
