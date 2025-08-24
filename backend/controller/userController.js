@@ -88,6 +88,21 @@ exports.uploadKyc = async (req, res, next) => {
   }
 };
 
+exports.getKyc = async (req, res, next) => {
+  try {
+    const kyc = await KYC.find().sort({ createdAt: -1 })
+    if (!kyc) {
+      return next(createError(404, "No KYC records found"));
+    }
+
+    res.status(200).json({ success: true, kyc })
+
+  } catch (err) {
+    next(err);
+  }
+
+}
+
 exports.updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;

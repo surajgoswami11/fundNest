@@ -36,6 +36,8 @@ export default function Navbar({ onMenuClick, sidebarOpen }) {
     const [notificationAnchor, setNotificationAnchor] = useState(null);
     const { user, logout } = useAuth();
 
+
+
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
